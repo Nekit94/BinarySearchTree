@@ -1,9 +1,7 @@
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Scanner;
 
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class BiTree<R extends Comparable<R>> {
 
     private static class BiTreeNode<R extends Comparable<R>> implements Comparable<R>{
@@ -35,7 +33,7 @@ public class BiTree<R extends Comparable<R>> {
 
     public BiTree addBalanced(R i) {
 
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
 
     }
 
@@ -53,19 +51,21 @@ public class BiTree<R extends Comparable<R>> {
                 node.left = new BiTreeNode<>(i);
     }
 
-    private List<R> levelTraverse() {
-
-        List<R> list = new LinkedList<>();
-        list = listByLevel(head, list);
-        return list;
+    public List<R> levelTraverse() {
+        return listByLevel(this.head);
     }
 
-    private List<R> listByLevel(BiTreeNode<R> node, List<R> list) {
+    private LinkedList<R> listByLevel(BiTreeNode<R> node) {
+        return listByLevel(node, new LinkedList<>());
+    }
+
+    //Missing elements added as null, need it for pretty print
+    private LinkedList<R> listByLevel(BiTreeNode<R> node, LinkedList<R> list) {
         if (node == null) return list;
         LinkedList<BiTreeNode<R>> queue = new LinkedList<>();
         queue.add(node);
 
-        for (int i = 0; i < depth(node); i++) {
+        for (int i = 0; i < getDepth(node); i++) {
             for (int j = 0; j < Math.pow(2, i); j++) {
                 BiTreeNode<R> curr = queue.pollFirst();
                 if (curr == null) {
@@ -84,38 +84,76 @@ public class BiTree<R extends Comparable<R>> {
     }
 
     public void prettyPrint() {
+        System.out.println(printByLevel(listByLevel(this.head), getDepth(this.head), getMaxElementLength(this.head)));
+    }
 
-        System.out.println(printByLevel(this.head, 1, depth(this.head)));
+    private StringBuilder printByLevel(LinkedList<R> levelTraverseList, int depth, int width) {
+
+        StringBuilder builder = new StringBuilder();
+
+        for (int currentLevel = 1; currentLevel <= depth; currentLevel++) {
+
+            int indent = (int) Math.floor(Math.pow(2, depth - currentLevel - 1) * (width + 1) - 0.5 - width * 0.1 / 2);
+            int interval = (int) Math.floor(Math.pow(2, depth - currentLevel) * (width + 1) - width);
+
+            int elementsOnLevel = (int) Math.pow(2, currentLevel - 1);
+            builder.append(" ".repeat(indent));
+
+            //bad code
+            for (int j = 0; j < elementsOnLevel; j++) {
+                builder.append(getWrappedStringElement(levelTraverseList.pollFirst(), width))
+                        //trailing spaces
+                        .append(" ".repeat(interval));
+            }
+            builder.append("\n");
+
+        }
+
+        return builder;
 
     }
 
-    private StringBuilder printByLevel(BiTreeNode<R> node, int currentLevel, int depth) {
+    private String getWrappedStringElement(R element, int width) {
+        if (element == null) {
+            return " ".repeat(width);
+        }
 
-        throw new NotImplementedException();
+        String elStr = element.toString();
+        if (elStr.length() > width) {
+            System.out.println("WARN: element length > than width (" + width + "): " + elStr);
+            return elStr;
+        }
 
+        StringBuilder sb = new StringBuilder(width);
+        sb.append(" ".repeat((width - elStr.length()) / 2));
+        sb.append(elStr);
+        while (sb.length() < width) {
+            sb.append(" ");
+        }
+        return sb.toString();
     }
 
     private int getMaxElementLength(BiTreeNode<R> node) {
 
         if (node == null) return 0;
-        return max(node).toString().length();
+        return getMaxNode(node).value.toString().length();
 
     }
 
-    private BiTreeNode<R> max(BiTreeNode<R> node) {
+    private BiTreeNode<R> getMaxNode(BiTreeNode<R> node) {
 
         if (node.right == null) return node;
-        return max(node.right);
+        return getMaxNode(node.right);
 
     }
 
     //Or depth parameter could be added to BiTreeNode class, depends on conditions
-    private int depth(BiTreeNode node) {
+    private int getDepth(BiTreeNode node) {
 
         if (node == null) return 0;
 
-        int ldepth = depth(node.left);
-        int rdepth = depth(node.right);
+        int ldepth = getDepth(node.left);
+        int rdepth = getDepth(node.right);
 
         return Math.max(ldepth, rdepth) + 1;
 
@@ -134,10 +172,11 @@ public class BiTree<R extends Comparable<R>> {
         tree.addRandom(205);
         tree.addRandom(2);
         tree.addRandom(1);
-//        tree.addRandom(92);
-//        tree.addRandom(93);
-//        tree.addRandom(94);
-//        tree.addRandom(95);
+        tree.addRandom(92);
+        tree.addRandom(93);
+        tree.addRandom(94);
+        tree.addRandom(90);
+        tree.addRandom(89);
 
         tree.prettyPrint();
 
