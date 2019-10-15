@@ -23,22 +23,17 @@ public class BiTree<R extends Comparable<R>> {
     private BiTreeNode<R> head;
 
     public void addRandom(R i) {
-
         if (head == null)
             head = new BiTreeNode<>(i);
         else
             addRecursive(head, i);
-
     }
 
     public BiTree addBalanced(R i) {
-
         throw new UnsupportedOperationException();
-
     }
 
     private void addRecursive(BiTreeNode<R> node, R i) {
-
         if (i.compareTo(node.value) > 0)
             if (node.right != null)
                 addRecursive(node.right, i);
@@ -93,16 +88,17 @@ public class BiTree<R extends Comparable<R>> {
 
         for (int currentLevel = 1; currentLevel <= depth; currentLevel++) {
 
-            int indent = (int) Math.floor(Math.pow(2, depth - currentLevel - 1) * (width + 1) - 0.5 - width * 0.1 / 2);
+            //The center of the element is calculated relative to the deepest level.
+            int indent = (int) Math.floor(Math.pow(2, depth - currentLevel - 1) * (width + 1) - 0.5 - width * 1.0 / 2);
             int interval = (int) Math.floor(Math.pow(2, depth - currentLevel) * (width + 1) - width);
 
             int elementsOnLevel = (int) Math.pow(2, currentLevel - 1);
             builder.append(" ".repeat(indent));
 
-            //bad code
+            //bad code, thinking on better solution
             for (int j = 0; j < elementsOnLevel; j++) {
                 builder.append(getWrappedStringElement(levelTraverseList.pollFirst(), width))
-                        //trailing spaces
+                        //trailing spaces in each row
                         .append(" ".repeat(interval));
             }
             builder.append("\n");
@@ -134,17 +130,13 @@ public class BiTree<R extends Comparable<R>> {
     }
 
     private int getMaxElementLength(BiTreeNode<R> node) {
-
         if (node == null) return 0;
         return getMaxNode(node).value.toString().length();
-
     }
 
     private BiTreeNode<R> getMaxNode(BiTreeNode<R> node) {
-
         if (node.right == null) return node;
         return getMaxNode(node.right);
-
     }
 
     //Or depth parameter could be added to BiTreeNode class, depends on conditions
@@ -179,9 +171,6 @@ public class BiTree<R extends Comparable<R>> {
         tree.addRandom(89);
 
         tree.prettyPrint();
-
-//        List<Integer> list = tree.levelTraverse();
-//        list.forEach(System.out::println);
 
     }
 
