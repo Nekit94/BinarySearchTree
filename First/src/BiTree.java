@@ -8,9 +8,11 @@ public class BiTree<R extends Comparable<R>> {
 
         BiTreeNode(R value) {
             this.value = value;
+            this.depth = 1;
         }
 
         R value;
+        int depth;
         BiTreeNode<R> left;
         BiTreeNode<R> right;
 
@@ -33,15 +35,62 @@ public class BiTree<R extends Comparable<R>> {
         throw new UnsupportedOperationException();
     }
 
+    public BiTree balance() {
+
+
+
+        return this;
+    }
+
+    private BiTreeNode<R> rightRotate(BiTreeNode<R> node) {
+
+        BiTreeNode<R> x = node.left;
+        BiTreeNode<R> b = x.right;
+
+        x.right = node;
+        node.left = b;
+
+        node.depth = Math.max(getDepth(node.left), getDepth(node.right)) + 1;
+        x.depth = Math.max(getDepth(x.left), getDepth(x.right)) + 1;
+
+        return x;
+
+    }
+
+     private BiTreeNode<R> leftRotate(BiTreeNode<R> node) {
+
+        BiTreeNode<R> y = node.right;
+        BiTreeNode<R> b = y.left;
+
+        y.left = node;
+        node.right = b;
+
+        node.depth = Math.max(getDepth(node.left), getDepth(node.right)) + 1;
+        y.depth = Math.max(getDepth(y.left), getDepth(y.right)) + 1;
+
+        return y;
+    }
+
+    private int getBalance(BiTreeNode<R> node) {
+        if (node == null)
+            return 0;
+
+        return getDepth(node.left) - getDepth(node.right);
+    }
+
     private void addRecursive(BiTreeNode<R> node, R i) {
         if (i.compareTo(node.value) > 0)
-            if (node.right != null)
+            if (node.right != null) {
+                node.depth += 1;
                 addRecursive(node.right, i);
+            }
             else
                 node.right = new BiTreeNode<>(i);
         else
-            if (node.left != null)
+            if (node.left != null) {
+                node.depth += 1;
                 addRecursive(node.left, i);
+            }
             else
                 node.left = new BiTreeNode<>(i);
     }
@@ -141,14 +190,17 @@ public class BiTree<R extends Comparable<R>> {
 
     //Or depth parameter could be added to BiTreeNode class, depends on conditions
     private int getDepth(BiTreeNode node) {
-
         if (node == null) return 0;
+        return node.depth;
+    }
 
-        int ldepth = getDepth(node.left);
-        int rdepth = getDepth(node.right);
-
-        return Math.max(ldepth, rdepth) + 1;
-
+    private LinkedList<BiTreeNode<R>> getAllNodes(BiTreeNode<R> node, LinkedList<BiTreeNode<R>> list) {
+        if (node != null) {
+            list.add(node);
+            list.addAll(getAllNodes(node.left, list));
+            list.addAll(getAllNodes(node.right, list));
+        }
+        return list;
     }
 
     public static void main(String[] args) {
@@ -158,19 +210,28 @@ public class BiTree<R extends Comparable<R>> {
         tree.addRandom(15);
         tree.addRandom(190);
         tree.addRandom(171);
-        tree.addRandom(170);
         tree.addRandom(3);
         tree.addRandom(91);
         tree.addRandom(205);
-        tree.addRandom(2);
-        tree.addRandom(1);
-        tree.addRandom(92);
-        tree.addRandom(93);
-        tree.addRandom(94);
-        tree.addRandom(90);
-        tree.addRandom(89);
+        tree.addRandom(155);
+        tree.addRandom(13);
+        tree.addRandom(17);
+        tree.addRandom(203);
 
-        tree.prettyPrint();
+        tree.getAllNodes(tree.head, new LinkedList<>()).forEach(el -> {
+            System.out.println(el.value + ", depth: " + el.depth);
+        });
+
+//        tree.addRandom(170);
+//        tree.addRandom(2);
+//        tree.addRandom(300);
+//        tree.addRandom(92);
+//        tree.addRandom(93);
+//        tree.addRandom(94);
+//        tree.addRandom(90);
+//        tree.addRandom(89);
+
+//        tree.prettyPrint();
 
     }
 
